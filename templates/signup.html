@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeRoute - Create Account</title>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-card auth-card-wide">
+            <div class="auth-logo">
+                <i class="fas fa-shield-alt"></i> SafeRoute
+            </div>
+
+            {% if error %}
+            <div class="auth-error">{{ error }}</div>
+            {% endif %}
+
+            {% if success %}
+            <div class="auth-success">{{ success }}</div>
+            {% endif %}
+
+            <form action="/signup" method="POST">
+                <div class="form-grid">
+                    <!-- Personal Info -->
+                    <div class="auth-input-group full-width">
+                        <label>FULL NAME</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" name="full_name" placeholder="John Doe" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-input-group">
+                        <label>USERNAME</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" name="username" placeholder="johndoe123" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-input-group">
+                        <label>PASSWORD</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" name="password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-input-group">
+                        <label>AGE</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-calendar"></i>
+                            <input type="number" name="age" placeholder="25" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-input-group">
+                        <label>CONTACT NUMBER</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" name="contact" placeholder="+91..." required>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contacts -->
+                    <div class="full-width">
+                        <div class="auth-section-title">Emergency Contacts (Min 2)</div>
+                    </div>
+
+                    <div class="auth-input-group full-width">
+                        <label>CONTACT 1</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-heart"></i>
+                            <input type="tel" name="emergency_1" placeholder="Phone Number 1" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-input-group full-width">
+                        <label>CONTACT 2</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-heart"></i>
+                            <input type="tel" name="emergency_2" placeholder="Phone Number 2" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-input-group full-width">
+                        <label>CONTACT 3 (OPTIONAL)</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-heart"></i>
+                            <input type="tel" name="emergency_3" placeholder="Phone Number 3">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-auth">
+                    Create Account <i class="fas fa-user-plus"></i>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account? <a href="/login">Sign In</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

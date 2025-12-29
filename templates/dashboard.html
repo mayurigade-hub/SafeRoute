@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeRoute - Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-shield-alt"></i> SafeRoute
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-item active" onclick="switchMainView('plan', this)">
+                    <i class="fas fa-paper-plane"></i> Navigate
+                </div>
+                <div class="nav-item" onclick="switchMainView('sos', this)">
+                    <i class="fas fa-exclamation-triangle"></i> Emergency SOS
+                </div>
+                <div class="nav-item" onclick="switchMainView('community', this)">
+                    <i class="fas fa-users"></i> Community
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-widget">
+                    <div class="label">Safety Status</div>
+                    <div class="status-badge">Secure Area</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="user-profile" onclick="toggleProfileDropdown()">
+                    <div class="user-info">
+                        <div class="user-name">{{ user.full_name }}</div>
+                        <div class="user-status">Online</div>
+                    </div>
+                    <div class="user-avatar">
+                        <img src="https://ui-avatars.com/api/?name={{ user.full_name }}&background=6366f1&color=fff"
+                            alt="User Avatar">
+                    </div>
+                </div>
+
+                <!-- Profile Dropdown -->
+                <div id="profile-dropdown" class="profile-dropdown">
+                    <div class="profile-header">
+                        <div class="profile-avatar-large">
+                            <img src="https://ui-avatars.com/api/?name={{ user.full_name }}&background=6366f1&color=fff"
+                                alt="User Avatar Large">
+                        </div>
+                        <div class="profile-name-main">{{ user.full_name }}</div>
+                        <div class="profile-username">@{{ user.username|replace('@', '') }}</div>
+                    </div>
+
+                    <div class="profile-info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Full Name</div>
+                            <div class="info-value">{{ user.full_name }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Age</div>
+                            <div class="info-value">{{ user.age }}</div>
+                        </div>
+                        <div class="info-item full-width">
+                            <div class="info-label">Phone Number</div>
+                            <div class="info-value">{{ user.contact }}</div>
+                        </div>
+                    </div>
+
+                    <div class="profile-emergency-header">
+                        <i class="fas fa-shield-heart"></i> EMERGENCY CONTACTS
+                    </div>
+
+                    <div class="emergency-list">
+                        {% for contact_num in user.emergency_contacts %}
+                        <div class="emergency-item">
+                            <i class="fas fa-phone"></i>
+                            <span>{{ contact_num }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <button class="btn-edit-profile" onclick="showEditContacts()">Edit Contacts</button>
+                    <a href="/logout" class="logout-link"><i class="fas fa-right-from-bracket"></i> Logout</a>
+                </div>
+            </header>
+
+            <!-- Map View Storage (Moved into containers by JS) -->
+            <div id="map-storage" style="display: none;">
+                <div id="map"></div>
+            </div>
+
+            <!-- Content Overlays -->
+            <div style="position: relative; z-index: 10; flex: 1; pointer-events: none;">
+
+                <!-- VIEW: PLAN (Search) -->
+                <div id="view-plan" class="view-section dashboard-home active" style="pointer-events: auto;">
+                    <div class="search-card">
+                        <div class="search-header">
+                            <div class="search-title">Plan Your Safe Journey</div>
+                            <div class="search-subtitle">Get route safety analysis powered by AI</div>
+                        </div>
+
+                        <div class="search-inputs">
+                            <div class="input-group">
+                                <label><i class="fas fa-location-dot"></i> Starting Point</label>
+                                <input type="text" id="start-node" placeholder="Address, city, or landmark">
+                            </div>
+
+                            <div class="input-divider">
+                                <i class="fas fa-arrows-up-down"></i>
+                            </div>
+
+                            <div class="input-group">
+                                <label><i class="fas fa-flag-checkered"></i> Destination</label>
+                                <input type="text" id="end-node" placeholder="Where are you heading?">
+                            </div>
+                        </div>
+
+                        <button class="btn-start" onclick="findSafeRoute()">
+                            Start Mapping <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- VIEW: EDIT CONTACTS -->
+                <div id="view-edit-contacts" class="view-section" style="pointer-events: auto;">
+                    <div class="edit-contacts-card">
+                        <div class="back-link" onclick="switchMainView('plan')" style="margin-bottom: 25px;">
+                            <i class="fas fa-arrow-left"></i> Current View
+                        </div>
+
+                        <div class="edit-header">
+                            <h2>Update Emergency Contacts</h2>
+                            <p>Manage the contacts notified during SOS alerts</p>
+                        </div>
+
+                        <form id="update-contacts-form" onsubmit="updateContacts(event)">
+                            <div class="edit-input-group">
+                                <label>Contact 1 (Required)</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-phone"></i>
+                                    <input type="text" name="emergency_1"
+                                        value="{{ user.emergency_contacts[0] if user.emergency_contacts|length > 0 else '' }}"
+                                        required placeholder="+91...">
+                                </div>
+                            </div>
+
+                            <div class="edit-input-group">
+                                <label>Contact 2 (Required)</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-phone"></i>
+                                    <input type="text" name="emergency_2"
+                                        value="{{ user.emergency_contacts[1] if user.emergency_contacts|length > 1 else '' }}"
+                                        required placeholder="+91...">
+                                </div>
+                            </div>
+
+                            <div class="edit-input-group">
+                                <label>Contact 3 (Optional)</label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-phone"></i>
+                                    <input type="text" name="emergency_3"
+                                        value="{{ user.emergency_contacts[2] if user.emergency_contacts|length > 2 else '' }}"
+                                        placeholder="+91...">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-save-contacts">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- VIEW: OPTIONS -->
+                <div id="view-options" class="view-section" style="pointer-events: auto;">
+                    <div class="options-container">
+                        <div class="back-link" onclick="switchMainView('plan')" style="margin-bottom: 20px;">
+                            <i class="fas fa-arrow-left"></i> Back to Search
+                        </div>
+
+                        <div class="options-header">
+                            <h2>Route Options</h2>
+                            <div class="route-count">3 Routes Found</div>
+                        </div>
+
+                        <!-- Map Container inside Options -->
+                        <div class="map-card">
+                            <div id="map-options" class="contained-map"></div>
+                        </div>
+
+                        <div class="safety-score-label">
+                            <i class="fas fa-shield-halved"></i> Safety Score Analysis
+                        </div>
+
+                        <div id="route-cards-container" class="route-grid">
+                            <!-- Route cards injected by JS (Side-by-Side) -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: DETAILS -->
+                <div id="view-details" class="view-section" style="pointer-events: auto;">
+                    <div class="details-container">
+                        <div class="back-link" onclick="backToOptions()" style="margin-bottom: 20px;">
+                            <i class="fas fa-arrow-left"></i> All Options
+                        </div>
+
+                        <!-- Map Container inside Details -->
+                        <div class="map-card detail-map-card">
+                            <div id="map-details" class="contained-map"></div>
+                        </div>
+
+                        <div class="details-bottom-grid">
+                            <!-- Left: Score Display -->
+                            <div class="score-breakdown-card">
+                                <div id="final-score-display" class="score-hero">94</div>
+                                <div class="score-label">FINAL SAFETY SCORE</div>
+                                <p class="score-desc">Safety score is calculated as an average of the factors shown.</p>
+                                <div id="route-recommendation-note" class="recommendation-note">
+                                    <i class="fas fa-sparkles"></i> This is the safest recommended route.
+                                </div>
+                            </div>
+
+                            <!-- Right: Factors -->
+                            <div class="factors-card">
+                                <div class="factors-header">Safety Score Breakdown</div>
+                                <div class="factor-list">
+                                    <div class="factor-item">
+                                        <div class="factor-info">
+                                            <i class="fas fa-database"></i>
+                                            <span>Past Crime Data</span>
+                                            <span class="factor-val"><span id="val-crime">98</span>%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div id="bar-crime" class="progress-fill"></div>
+                                        </div>
+                                    </div>
+                                    <div class="factor-item">
+                                        <div class="factor-info">
+                                            <i class="fas fa-video"></i>
+                                            <span>CCTV Risk Signal</span>
+                                            <span class="factor-val"><span id="val-cctv">95</span>%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div id="bar-cctv" class="progress-fill"></div>
+                                        </div>
+                                    </div>
+                                    <div class="factor-item">
+                                        <div class="factor-info">
+                                            <i class="fas fa-users-viewfinder"></i>
+                                            <span>User Reports</span>
+                                            <span class="factor-val"><span id="val-reports">96</span>%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div id="bar-reports" class="progress-fill"></div>
+                                        </div>
+                                    </div>
+                                    <div class="factor-item">
+                                        <div class="factor-info">
+                                            <i class="fas fa-cloud-sun"></i>
+                                            <span>Weather Conditions</span>
+                                            <span class="factor-val"><span id="val-weather">90</span>%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div id="bar-weather" class="progress-fill"></div>
+                                        </div>
+                                    </div>
+                                    <div class="factor-item">
+                                        <div class="factor-info">
+                                            <i class="fas fa-lightbulb"></i>
+                                            <span>Street Lighting</span>
+                                            <span class="factor-val"><span id="val-lighting">99</span>%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div id="bar-lighting" class="progress-fill"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="details-actions">
+                            <button id="btn-start-nav" class="btn-nav" onclick="triggerSOS('GENERAL')">
+                                Start Navigation via Safe Route <i class="fas fa-location-arrow"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: SOS -->
+                <div id="view-sos" class="view-section dashboard-home" style="pointer-events: auto;">
+                    <div class="sos-container">
+                        <div class="sos-icon-header">
+                            <i class="fas fa-triangle-exclamation"></i>
+                        </div>
+                        <h2 class="sos-title">Emergency Mode</h2>
+                        <p class="sos-subtitle">Triggers instant alerts to your contacts</p>
+
+                        <div class="sos-main-btn" onclick="triggerSOS('MAIN')">
+                            <i class="fas fa-bell"></i>
+                            <div class="sos-btn-text">SOS ALERT</div>
+                            <div class="sos-btn-subtext">Tap to send location immediately</div>
+                        </div>
+
+                        <div class="sos-secondary-grid">
+                            <div class="sos-secondary-btn" onclick="triggerSOS('VOICE')">
+                                <i class="fas fa-microphone"></i>
+                                <span>Voice SOS</span>
+                            </div>
+                            <div class="sos-secondary-btn" onclick="triggerSOS('SHAKE')">
+                                <i class="fas fa-phone"></i>
+                                <span>Shake to Call</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: COMMUNITY -->
+                <div id="view-community" class="view-section" style="pointer-events: auto; padding-top: 40px;">
+                    <div class="community-container">
+                        <div class="community-header">
+                            <h2>Community Safety</h2>
+                            <p>Report incidents to improve safety scores for everyone</p>
+                        </div>
+
+                        <!-- Report Box -->
+                        <div class="report-box">
+                            <div class="report-header">
+                                <i class="fas fa-paper-plane"></i>
+                                <div>
+                                    <div class="report-title">Report an Incident</div>
+                                    <div class="report-subtitle">Your feedback directly influences future safety scores.
+                                    </div>
+                                </div>
+                            </div>
+                            <textarea id="community-report-input"
+                                placeholder="Example: This route felt safe due to shops and lighting..."></textarea>
+                            <button class="btn-submit-report" onclick="submitCommunityReport()">Submit Report</button>
+                        </div>
+
+                        <div class="recent-reports-label">RECENT COMMUNITY REPORTS</div>
+
+                        <div class="reports-feed">
+                            <!-- Report 1 -->
+                            <div class="report-card">
+                                <div class="report-card-top">
+                                    <div class="report-user">
+                                        <div class="report-avatar">SK</div>
+                                        <div>
+                                            <div class="user-name">Sarah K.</div>
+                                            <div class="report-time">2 days ago</div>
+                                        </div>
+                                    </div>
+                                    <div class="safety-badge">5/5 Safety</div>
+                                </div>
+                                <div class="report-content">
+                                    This route felt safe due to shops and lighting. Plenty of people around even at 9
+                                    PM.
+                                </div>
+                            </div>
+
+                            <!-- Report 2 -->
+                            <div class="report-card">
+                                <div class="report-card-top">
+                                    <div class="report-user">
+                                        <div class="report-avatar avatar-blue">MT</div>
+                                        <div>
+                                            <div class="user-name">Mike T.</div>
+                                            <div class="report-time">1 week ago</div>
+                                        </div>
+                                    </div>
+                                    <div class="safety-badge warning">3/5 Safety</div>
+                                </div>
+                                <div class="report-content">
+                                    Street lights were out on 5th street. Felt a bit sketchy.
+                                </div>
+                            </div>
+
+                            <!-- Report 3 -->
+                            <div class="report-card">
+                                <div class="report-card-top">
+                                    <div class="report-user">
+                                        <div class="report-avatar avatar-purple">JL</div>
+                                        <div>
+                                            <div class="user-name">Jenny L.</div>
+                                            <div class="report-time">3 weeks ago</div>
+                                        </div>
+                                    </div>
+                                    <div class="safety-badge">4/5 Safety</div>
+                                </div>
+                                <div class="report-content">
+                                    Good route, but lots of traffic during rush hour.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Main JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
