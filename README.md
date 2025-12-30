@@ -57,3 +57,11 @@ SafeRoute is especially useful for:
 - Emergency preparedness during travel  
 
 ---
+
+## 🚀 Future Improvements
+
+- Real-time crime data integration
+- Live SOS alerts via SMS or WhatsApp
+- AI-based safety scoring using real datasets
+- Mobile app version
+- Smartwatch Integration
