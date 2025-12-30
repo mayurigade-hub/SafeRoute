@@ -5,15 +5,22 @@ The system analyzes multiple routes and visually categorizes them as Safe, Moder
 
 **✨ Key Features**
 •	User Login & Signup using Firebase
+
 •	Interactive map-based navigation
+
 •	Multiple route options between locations
+
 •	Color-coded safety routes:
   🟢 Safest Route
   🟡 Moderate Risk Route
   🔴 High Risk Route
+  
 •	Mock AI-based safety score analysis
+
 •	Emergency SOS feature
+
 •	Emergency contacts management
+
 •	Modern and responsive dark-theme UI
 
 **🔄 Project Flow**
@@ -30,18 +37,28 @@ The system analyzes multiple routes and visually categorizes them as Safe, Moder
 
 **🛠️ Tech Stack**
 •	Frontend: HTML, CSS, JavaScript
+
 •	Backend: Python (Flask)
+
 •	Database: Firebase Firestore
+
 •	Maps & Visualization: Leaflet.js, OpenStreetMap
+
 •	Routing API: OSRM
+
 •	Authentication: Firebase Admin SDK
+
 •	Deployment: Render
 
 **🎯 Use Case**
 •	SafeRoute is especially useful for:
+
 •	Night travel safety
+
 •	Solo travelers
+
 •	Urban navigation with safety awareness
+
 •	Emergency preparedness during travel
 
 
