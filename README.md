@@ -11,9 +11,9 @@ The system analyzes multiple routes and visually categorizes them as **Safe, Mod
 - Interactive **map-based navigation**  
 - Multiple route options between locations  
 - **Color-coded safety routes**  
-  - 🟢 Safest Route  
-  - 🟡 Moderate Risk Route  
-  - 🔴 High Risk Route  
+  🟢 Safest Route  
+  🟡 Moderate Risk Route  
+  🔴 High Risk Route  
 - Mock **AI-based safety score analysis**  
 - **Emergency SOS** feature  
 - Emergency contacts management  
