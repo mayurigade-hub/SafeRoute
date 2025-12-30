@@ -3,6 +3,7 @@
 SafeRoute is a web-based safety navigation application designed to help users choose safer travel routes between two locations.
 The system analyzes multiple routes and visually categorizes them as Safe, Moderate, or Risky, enabling users to make informed travel decisions and access emergency support when needed.
 
+
 **✨ Key Features**
 •	User Login & Signup using Firebase
 
@@ -26,6 +27,7 @@ The system analyzes multiple routes and visually categorizes them as Safe, Moder
 
 •	Modern and responsive dark-theme UI
 
+
 **🔄 Project Flow**
 1.	User opens the SafeRoute web application
 2.	User signs up or logs in
@@ -37,6 +39,7 @@ The system analyzes multiple routes and visually categorizes them as Safe, Moder
 8.	Routes are visually color-coded based on safety
 9.	User selects the preferred route
 10.	In case of danger, user can trigger the SOS feature
+    
 
 **🛠️ Tech Stack**
 •	Frontend: HTML, CSS, JavaScript
@@ -52,6 +55,7 @@ The system analyzes multiple routes and visually categorizes them as Safe, Moder
 •	Authentication: Firebase Admin SDK
 
 •	Deployment: Render
+
 
 **🎯 Use Case**
 •	SafeRoute is especially useful for:
