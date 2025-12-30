@@ -58,6 +58,7 @@ The system analyzes multiple routes and visually categorizes them as Safe, Moder
 
 
 **🎯 Use Case**
+
 •	SafeRoute is especially useful for:
 
 •	Night travel safety
