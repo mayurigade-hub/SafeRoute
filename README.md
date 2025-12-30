@@ -1,5 +1,6 @@
 
 **🚦 SafeRoute – Safety Navigation Web Application**
+
 SafeRoute is a web-based safety navigation application designed to help users choose safer travel routes between two locations.
 The system analyzes multiple routes and visually categorizes them as Safe, Moderate, or Risky, enabling users to make informed travel decisions and access emergency support when needed.
 
