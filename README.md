@@ -8,6 +8,7 @@ The system analyzes multiple routes and visually categorizes them as Safe, Moder
 
 
 **✨ Key Features**
+
 •	User Login & Signup using Firebase
 
 •	Interactive map-based navigation
@@ -33,6 +34,7 @@ The system analyzes multiple routes and visually categorizes them as Safe, Moder
 
 
 **🔄 Project Flow**
+
 1.	User opens the SafeRoute web application
 2.	User signs up or logs in
 3.	Flask backend authenticates the user using Firebase
@@ -47,6 +49,7 @@ The system analyzes multiple routes and visually categorizes them as Safe, Moder
 
 
 **🛠️ Tech Stack**
+
 •	Frontend: HTML, CSS, JavaScript
 
 •	Backend: Python (Flask)
