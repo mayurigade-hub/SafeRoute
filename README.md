@@ -11,6 +11,7 @@ The system analyzes multiple routes and visually categorizes them as Safe, Moder
 •	Multiple route options between locations
 
 •	Color-coded safety routes:
+
   🟢 Safest Route
   
   🟡 Moderate Risk Route
