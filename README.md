@@ -12,7 +12,9 @@ The system analyzes multiple routes and visually categorizes them as Safe, Moder
 
 •	Color-coded safety routes:
   🟢 Safest Route
+  
   🟡 Moderate Risk Route
+  
   🔴 High Risk Route
   
 •	Mock AI-based safety score analysis
